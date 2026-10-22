@@ -1,36 +1,38 @@
 use std::io;
 use rand::RngExt;
+use std::cmp::Ordering;
 
 fn main() {
     println!("Adivinhe o número!");
 
-    // 1. Gera o número secreto entre 1 e 100
     let secret_number = rand::rng().random_range(1..=100);
 
-    println!("Por favor, insira o seu palpite:");
+    loop {
+        println!("Por favor, insira o seu palpite:");
 
-    // 2. Cria a variável mutável 'guess' para armazenar a entrada do utilizador
-    let mut guess = String::new();
+        let mut guess = String::new();
 
-    io::stdin()
-        .read_line(&mut guess)
-        .expect("Falha ao ler a linha");
+        io::stdin()
+            .read_line(&mut guess)
+            .expect("Falha ao ler a linha");
 
-    // 3. Converte a string inserida num número inteiro (u32)
-    let guess: u32 = match guess.trim().parse() {
-        Ok(num) => num,
-        Err(_) => {
-            println!("Por favor, digite um número válido!");
-            return;
+        let guess: u32 = match guess.trim().parse() {
+            Ok(num) => num,
+            Err(_) => {
+                println!("Por favor, digite um número válido!");
+                continue;
+            }
+        };
+
+        println!("You guessed: {guess}");
+
+        match guess.cmp(&secret_number) {
+            Ordering::Less => println!("Too small!"),
+            Ordering::Greater => println!("Too big!"),
+            Ordering::Equal => {
+                println!("You win!");
+                break;
+            }
         }
-    };
-
-    println!("You guessed: {guess}");
-
-    // 4. Compara o palpite com o número secreto
-    match guess.cmp(&secret_number) {
-        std::cmp::Ordering::Less => println!("Muito pequeno!"),
-        std::cmp::Ordering::Greater => println!("Muito grande!"),
-        std::cmp::Ordering::Equal => println!("Parabéns, você acertou!"),
     }
 }
